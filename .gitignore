@@ -1,0 +1,21 @@
+# GnuCOBOL compiled executables
+chap01/asgn01
+chap01/asgn02
+chap01/asgn03
+chap01/asgn04
+chap01/asgn05
+chap01/asgn06
+chap01/asgn07
+
+# GnuCOBOL generated files
+*.o
+*.so
+*.c
+
+# Data/output files
+# *.dat
+
+# Editor backup files
+*~
+
+
