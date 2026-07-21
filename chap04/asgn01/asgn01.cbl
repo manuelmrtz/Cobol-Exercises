@@ -1,5 +1,58 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. ASGN01.
+       PROGRAM-ID. CHAP04A01.
+       
+      *****************************************************************
+      * PROGRAM NAME : Chapter 04 Assignment 01                       *
+      * PROGRAM ID   : CHAP04A01                                      *
+      *                                                               *
+      * AUTHOR       : Manuel A. Martinez                             *
+      * DATE WRITTEN : 2026-07-20                                     *
+      * DATE COMPILED:                                                *
+      *                                                               *
+      * INSTALLATION : Manuel Martinez Development Lab                *
+      * ENVIRONMENT  : Linux ARM64 GnuCOBOL 3.2                       *
+      *                                                               *
+      * PROGRAM TYPE : Batch                                          *
+      *                                                               *
+      *===============================================================*
+      *                                                               *
+      * DESCRIPTION :                                                 *
+      *   [Brief description of what the program does - 2-3 lines]    *
+      *                                                               *
+      *===============================================================*
+      *                                                               *
+      * BUSINESS PURPOSE :                                            *
+      *   Educational                                                 *
+      *                                                               *
+      *===============================================================*
+      *                                                               *
+      * INPUT FILES :                                                 *
+      *   -------------------- -------------------------------------- *
+      *   | File Name       | Description                           | *
+      *   -------------------- -------------------------------------- *
+      *   | asgn01-i.dat    | Customer master data                  | *
+      *   -------------------- -------------------------------------- *
+      *                                                               *
+      * OUTPUT FILES :                                                *
+      *   -------------------- -------------------------------------- *
+      *   | File Name       | Description                           | *
+      *   -------------------- -------------------------------------- *
+      *   | asgn01-o1.dat   | Vertical labels (stacked)             | *
+      *   | asgn01-o2.dat   | Horizontal labels (side-by-side)      | *
+      *   -------------------- -------------------------------------- *
+      *                                                               *
+      *===============================================================*
+      *                                                               *
+      * ERROR HANDLING :                                              *
+      *   Overall, the program handles open, read, end-of-file, write,*
+      *       string overflow, close, and abnormal cleanup conditions.*
+      *                                                               *
+      *===============================================================*
+      *                                                               *
+      * REVISION HISTORY :                                            *
+      *   2026-07-DD  MAM  Initial version                            *
+      *                                                               *
+      *****************************************************************
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
