@@ -151,12 +151,45 @@
        300-SIDE-LABEL.
            MOVE ALL "-" TO LABEL-LINE-SIDE
            PERFORM 500-WRITE-SIDE
-           MOVE SPACES TO LABEL-LINE-SIDE
+           
+      *    Line 1: Name
            MOVE SPACES TO WS-SIDE-LABEL
-           MOVE IN-CUSTOMER-NAME TO LEFT-SIDE-LABEL
-           MOVE IN-CUSTOMER-NAME TO RIGHT-SIDE-LABEL
+           MOVE IN-CUSTOMER-NAME 
+               TO LEFT-SIDE-LABEL
+                  RIGHT-SIDE-LABEL
            MOVE WS-SIDE-LABEL TO LABEL-LINE-SIDE
            PERFORM 500-WRITE-SIDE
+
+      *    Line 2: Address    
+           MOVE SPACES TO WS-SIDE-LABEL
+           MOVE IN-STREET-ADDRESS 
+               TO LEFT-SIDE-LABEL
+                  RIGHT-SIDE-LABEL
+           MOVE WS-SIDE-LABEL TO LABEL-LINE-SIDE
+           PERFORM 500-WRITE-SIDE
+
+      *    Line 3: City State ZIP
+           MOVE SPACES TO WS-SIDE-LABEL
+           STRING
+               FUNCTION TRIM(IN-CITY)
+                   DELIMITED BY SIZE
+               ", "
+                   DELIMITED BY SIZE
+               FUNCTION TRIM(IN-STATE)
+                   DELIMITED BY SIZE
+               " "
+                   DELIMITED BY SIZE
+               FUNCTION TRIM(IN-ZIPCODE)
+                   DELIMITED BY SIZE
+               INTO LEFT-SIDE-LABEL
+                   ON OVERFLOW
+                       DISPLAY "LABEL OVERFLOW FOR CUSTOMER: "
+                           IN-CUSTOMER-NAME
+                       PERFORM 700-ABEND-PROGRAM
+               END-STRING
+               MOVE LEFT-SIDE-LABEL TO RIGHT-SIDE-LABEL
+               MOVE WS-SIDE-LABEL TO LABEL-LINE-SIDE
+               PERFORM 500-WRITE-SIDE
            .
 
        400-WRITE-STACKED.
