@@ -7,16 +7,23 @@ chap01/asgn05
 chap01/asgn06
 chap01/asgn07
 chap02/ppgm01
+chap04/ppgm01
+chap04/ppgm02
+chap04/asgn01/asgn01
 
 # GnuCOBOL generated files
 *.o
 *.so
 *.c
 
+*.zip
+
 # Data/output files
 # *.dat
 
 # Editor backup files
 *~
+
+_superbol/
 
 
