@@ -1,0 +1,89 @@
+  GNUCOBOL GREENBAR PRINTING TEST                                      PAGE  1
+  ==============================================================================
+  NO.   DESCRIPTION                                             STATUS
+  ------------------------------------------------------------------------------
+  01    THIS IS GNUCOBOL TEST RECORD NUMBER 01                    OK
+  02    THIS IS GNUCOBOL TEST RECORD NUMBER 02                    OK
+  03    THIS IS GNUCOBOL TEST RECORD NUMBER 03                    OK
+  04    THIS IS GNUCOBOL TEST RECORD NUMBER 04                    OK
+  05    THIS IS GNUCOBOL TEST RECORD NUMBER 05                    OK
+  06    THIS IS GNUCOBOL TEST RECORD NUMBER 06                    OK
+  07    THIS IS GNUCOBOL TEST RECORD NUMBER 07                    OK
+  08    THIS IS GNUCOBOL TEST RECORD NUMBER 08                    OK
+  09    THIS IS GNUCOBOL TEST RECORD NUMBER 09                    OK
+  10    THIS IS GNUCOBOL TEST RECORD NUMBER 10                    OK
+  11    THIS IS GNUCOBOL TEST RECORD NUMBER 11                    OK
+  12    THIS IS GNUCOBOL TEST RECORD NUMBER 12                    OK
+  13    THIS IS GNUCOBOL TEST RECORD NUMBER 13                    OK
+  14    THIS IS GNUCOBOL TEST RECORD NUMBER 14                    OK
+  15    THIS IS GNUCOBOL TEST RECORD NUMBER 15                    OK
+  16    THIS IS GNUCOBOL TEST RECORD NUMBER 16                    OK
+  17    THIS IS GNUCOBOL TEST RECORD NUMBER 17                    OK
+  18    THIS IS GNUCOBOL TEST RECORD NUMBER 18                    OK
+  19    THIS IS GNUCOBOL TEST RECORD NUMBER 19                    OK
+  20    THIS IS GNUCOBOL TEST RECORD NUMBER 20                    OK
+  21    THIS IS GNUCOBOL TEST RECORD NUMBER 21                    OK
+  22    THIS IS GNUCOBOL TEST RECORD NUMBER 22                    OK
+  23    THIS IS GNUCOBOL TEST RECORD NUMBER 23                    OK
+  24    THIS IS GNUCOBOL TEST RECORD NUMBER 24                    OK
+  25    THIS IS GNUCOBOL TEST RECORD NUMBER 25                    OK
+  26    THIS IS GNUCOBOL TEST RECORD NUMBER 26                    OK
+  27    THIS IS GNUCOBOL TEST RECORD NUMBER 27                    OK
+  28    THIS IS GNUCOBOL TEST RECORD NUMBER 28                    OK
+  29    THIS IS GNUCOBOL TEST RECORD NUMBER 29                    OK
+  30    THIS IS GNUCOBOL TEST RECORD NUMBER 30                    OK
+  31    THIS IS GNUCOBOL TEST RECORD NUMBER 31                    OK
+  32    THIS IS GNUCOBOL TEST RECORD NUMBER 32                    OK
+  33    THIS IS GNUCOBOL TEST RECORD NUMBER 33                    OK
+  34    THIS IS GNUCOBOL TEST RECORD NUMBER 34                    OK
+  35    THIS IS GNUCOBOL TEST RECORD NUMBER 35                    OK
+  36    THIS IS GNUCOBOL TEST RECORD NUMBER 36                    OK
+  37    THIS IS GNUCOBOL TEST RECORD NUMBER 37                    OK
+  38    THIS IS GNUCOBOL TEST RECORD NUMBER 38                    OK
+  39    THIS IS GNUCOBOL TEST RECORD NUMBER 39                    OK
+  40    THIS IS GNUCOBOL TEST RECORD NUMBER 40                    OK
+  41    THIS IS GNUCOBOL TEST RECORD NUMBER 41                    OK
+  42    THIS IS GNUCOBOL TEST RECORD NUMBER 42                    OK
+  43    THIS IS GNUCOBOL TEST RECORD NUMBER 43                    OK
+  44    THIS IS GNUCOBOL TEST RECORD NUMBER 44                    OK
+  45    THIS IS GNUCOBOL TEST RECORD NUMBER 45                    OK
+  46    THIS IS GNUCOBOL TEST RECORD NUMBER 46                    OK
+  47    THIS IS GNUCOBOL TEST RECORD NUMBER 47                    OK
+  48    THIS IS GNUCOBOL TEST RECORD NUMBER 48                    OK
+  49    THIS IS GNUCOBOL TEST RECORD NUMBER 49                    OK
+  50    THIS IS GNUCOBOL TEST RECORD NUMBER 50                    OK
+  51    THIS IS GNUCOBOL TEST RECORD NUMBER 51                    OK
+  52    THIS IS GNUCOBOL TEST RECORD NUMBER 52                    OK
+  53    THIS IS GNUCOBOL TEST RECORD NUMBER 53                    OK
+  54    THIS IS GNUCOBOL TEST RECORD NUMBER 54                    OK
+  55    THIS IS GNUCOBOL TEST RECORD NUMBER 55                    OK
+  56    THIS IS GNUCOBOL TEST RECORD NUMBER 56                    OK
+
+  GNUCOBOL GREENBAR PRINTING TEST                                      PAGE  2
+  ==============================================================================
+  NO.   DESCRIPTION                                             STATUS
+  ------------------------------------------------------------------------------
+  57    THIS IS GNUCOBOL TEST RECORD NUMBER 57                    OK
+  58    THIS IS GNUCOBOL TEST RECORD NUMBER 58                    OK
+  59    THIS IS GNUCOBOL TEST RECORD NUMBER 59                    OK
+  60    THIS IS GNUCOBOL TEST RECORD NUMBER 60                    OK
+  61    THIS IS GNUCOBOL TEST RECORD NUMBER 61                    OK
+  62    THIS IS GNUCOBOL TEST RECORD NUMBER 62                    OK
+  63    THIS IS GNUCOBOL TEST RECORD NUMBER 63                    OK
+  64    THIS IS GNUCOBOL TEST RECORD NUMBER 64                    OK
+  65    THIS IS GNUCOBOL TEST RECORD NUMBER 65                    OK
+  66    THIS IS GNUCOBOL TEST RECORD NUMBER 66                    OK
+  67    THIS IS GNUCOBOL TEST RECORD NUMBER 67                    OK
+  68    THIS IS GNUCOBOL TEST RECORD NUMBER 68                    OK
+  69    THIS IS GNUCOBOL TEST RECORD NUMBER 69                    OK
+  70    THIS IS GNUCOBOL TEST RECORD NUMBER 70                    OK
+  71    THIS IS GNUCOBOL TEST RECORD NUMBER 71                    OK
+  72    THIS IS GNUCOBOL TEST RECORD NUMBER 72                    OK
+  73    THIS IS GNUCOBOL TEST RECORD NUMBER 73                    OK
+  74    THIS IS GNUCOBOL TEST RECORD NUMBER 74                    OK
+  75    THIS IS GNUCOBOL TEST RECORD NUMBER 75                    OK
+  76    THIS IS GNUCOBOL TEST RECORD NUMBER 76                    OK
+  77    THIS IS GNUCOBOL TEST RECORD NUMBER 77                    OK
+  78    THIS IS GNUCOBOL TEST RECORD NUMBER 78                    OK
+  79    THIS IS GNUCOBOL TEST RECORD NUMBER 79                    OK
+  80    THIS IS GNUCOBOL TEST RECORD NUMBER 80                    OK

@@ -1,0 +1,484 @@
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0001
+
+LINE    PG/LN  A...B............................................................
+
+000001         IDENTIFICATION DIVISION.
+000002         PROGRAM-ID. PRINT80.
+000003        ******************************************************************
+000004        * PURPOSE: CREATE AN 80-RECORD REPORT, QUERY AVAILABLE CUPS      *
+000005        *          PRINTERS, LET THE USER SELECT ONE, AND PRINT.         *
+000006        ******************************************************************
+000007
+000008         ENVIRONMENT DIVISION.
+000009         INPUT-OUTPUT SECTION.
+000010         FILE-CONTROL.
+000011
+000012             SELECT PRINT-FILE
+000013                 ASSIGN TO "print-80-records.txt"
+000014                 ORGANIZATION IS LINE SEQUENTIAL
+000015                 FILE STATUS IS WS-PRINT-STATUS.
+000016
+000017             SELECT PRINTER-LIST-FILE
+000018                 ASSIGN TO "cups-printers.tmp"
+000019                 ORGANIZATION IS LINE SEQUENTIAL
+000020                 FILE STATUS IS WS-LIST-STATUS.
+000021
+000022         DATA DIVISION.
+000023         FILE SECTION.
+000024
+000025         FD  PRINT-FILE.
+000026         01  PRINT-RECORD                    PIC X(80).
+000027
+000028         FD  PRINTER-LIST-FILE.
+000029         01  PRINTER-LIST-RECORD             PIC X(128).
+000030
+000031         WORKING-STORAGE SECTION.
+000032
+000033         01  WS-PRINT-STATUS                 PIC XX VALUE SPACES.
+000034         01  WS-LIST-STATUS                  PIC XX VALUE SPACES.
+000035
+000036         01  WS-RETURN-CODE                  PIC S9(9) COMP-5
+000037                                                     VALUE ZERO.
+000038
+000039         01  WS-RECORD-NUMBER                PIC 99 VALUE ZERO.
+000040         01  WS-DISPLAY-NUMBER               PIC Z9.
+000041
+000042         01  WS-PAGE-NUMBER                  PIC 99 VALUE ZERO.
+000043         01  WS-DISPLAY-PAGE                 PIC Z9.
+000044
+000045         01  WS-LINE-COUNT                   PIC 99 VALUE ZERO.
+000046         01  WS-MAX-LINES                    PIC 99 VALUE 60.
+000047
+000048         01  WS-PRINTER-COUNT                PIC 99 VALUE ZERO.
+000049         01  WS-PRINTER-INDEX                PIC 99 VALUE ZERO.
+000050         01  WS-PRINTER-SELECTION            PIC 99 VALUE ZERO.
+000051         01  WS-MENU-NUMBER                  PIC Z9.
+000052
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0002
+
+LINE    PG/LN  A...B............................................................
+
+000053         01  WS-END-OF-PRINTER-LIST          PIC X VALUE "N".
+000054             88  END-OF-PRINTER-LIST         VALUE "Y".
+000055             88  MORE-PRINTERS               VALUE "N".
+000056
+000057         01  WS-SELECTED-PRINTER             PIC X(128)
+000058                                                     VALUE SPACES.
+000059
+000060         01  WS-PRINT-COMMAND                PIC X(500)
+000061                                                     VALUE SPACES.
+000062
+000063         01  WS-QUERY-COMMAND                PIC X(200)
+000064             VALUE
+000065             "lpstat -a | awk '{print $1}' > cups-printers.tmp".
+000066
+000067         01  WS-FORM-FEED-COMMAND            PIC X(200)
+000068             VALUE
+000069             "printf '\014' >> print-80-records.txt".
+000070
+000071         01  WS-DELETE-TEMP-COMMAND          PIC X(100)
+000072             VALUE "rm -f cups-printers.tmp print-80-records.txt".
+000073
+000074         01  WS-PRINTER-TABLE.
+000075             05  WS-PRINTER-ENTRY OCCURS 20 TIMES.
+000076                 10  WS-PRINTER-NAME         PIC X(128).
+000077
+000078         PROCEDURE DIVISION.
+000079
+000080         100-MAIN.
+000081
+000082             PERFORM 120-QUERY-PRINTERS
+000083
+000084             PERFORM 150-SELECT-PRINTER
+000085
+000086             PERFORM 200-OPEN-NEW-REPORT
+000087
+000088             PERFORM 300-START-NEW-PAGE
+000089
+000090             PERFORM VARYING WS-RECORD-NUMBER
+000091                 FROM 1 BY 1
+000092                 UNTIL WS-RECORD-NUMBER > 80
+000093
+000094                 IF WS-LINE-COUNT >= WS-MAX-LINES
+000095                     PERFORM 500-INSERT-FORM-FEED
+000096                     PERFORM 300-START-NEW-PAGE
+000097                 END-IF
+000098
+000099                 PERFORM 400-WRITE-DETAIL-RECORD
+000100             END-PERFORM
+000101
+000102             PERFORM 600-CLOSE-REPORT
+000103
+000104             PERFORM 700-SEND-TO-PRINTER
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0003
+
+LINE    PG/LN  A...B............................................................
+
+000105
+000106             PERFORM 800-DELETE-TEMP-FILE
+000107
+000108             STOP RUN.
+000109
+000110         120-QUERY-PRINTERS.
+000111
+000112             CALL "SYSTEM"
+000113                 USING WS-QUERY-COMMAND
+000114                 RETURNING WS-RETURN-CODE
+000115             END-CALL
+000116
+000117             IF WS-RETURN-CODE NOT = ZERO
+000118                 DISPLAY "ERROR QUERYING CUPS PRINTERS"
+000119                 DISPLAY "RETURN CODE: " WS-RETURN-CODE
+000120                 STOP RUN
+000121             END-IF
+000122
+000123             OPEN INPUT PRINTER-LIST-FILE
+000124
+000125             IF WS-LIST-STATUS NOT = "00"
+000126                 DISPLAY "ERROR OPENING PRINTER LIST"
+000127                 DISPLAY "FILE STATUS: " WS-LIST-STATUS
+000128                 STOP RUN
+000129             END-IF
+000130
+000131             MOVE ZERO TO WS-PRINTER-COUNT
+000132             SET MORE-PRINTERS TO TRUE
+000133
+000134             PERFORM UNTIL END-OF-PRINTER-LIST
+000135                 READ PRINTER-LIST-FILE
+000136                     AT END
+000137                         SET END-OF-PRINTER-LIST TO TRUE
+000138
+000139                     NOT AT END
+000140                         IF PRINTER-LIST-RECORD NOT = SPACES
+000141                             IF WS-PRINTER-COUNT < 20
+000142                                 ADD 1 TO WS-PRINTER-COUNT
+000143
+000144                                 MOVE PRINTER-LIST-RECORD
+000145                                     TO WS-PRINTER-NAME
+000146                                        (WS-PRINTER-COUNT)
+000147                             END-IF
+000148                         END-IF
+000149                 END-READ
+000150             END-PERFORM
+000151
+000152             CLOSE PRINTER-LIST-FILE
+000153
+000154             IF WS-LIST-STATUS NOT = "00"
+000155                 DISPLAY "ERROR CLOSING PRINTER LIST"
+000156                 DISPLAY "FILE STATUS: " WS-LIST-STATUS
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0004
+
+LINE    PG/LN  A...B............................................................
+
+000157                 STOP RUN
+000158             END-IF
+000159
+000160             IF WS-PRINTER-COUNT = ZERO
+000161                 DISPLAY "NO CUPS PRINTERS ARE AVAILABLE"
+000162                 DISPLAY "CHECK WITH: lpstat -a"
+000163                 STOP RUN
+000164             END-IF.
+000165
+000166         150-SELECT-PRINTER.
+000167
+000168             DISPLAY SPACE
+000169             DISPLAY "AVAILABLE CUPS PRINTERS"
+000170             DISPLAY "-----------------------"
+000171
+000172             PERFORM VARYING WS-PRINTER-INDEX
+000173                 FROM 1 BY 1
+000174                 UNTIL WS-PRINTER-INDEX > WS-PRINTER-COUNT
+000175
+000176                 MOVE WS-PRINTER-INDEX TO WS-MENU-NUMBER
+000177
+000178                 DISPLAY WS-MENU-NUMBER
+000179                     " - "
+000180                     FUNCTION TRIM
+000181                         (WS-PRINTER-NAME(WS-PRINTER-INDEX))
+000182             END-PERFORM
+000183
+000184             DISPLAY SPACE
+000185             DISPLAY "ENTER PRINTER NUMBER: "
+000186                 WITH NO ADVANCING
+000187
+000188             ACCEPT WS-PRINTER-SELECTION
+000189
+000190             IF WS-PRINTER-SELECTION < 1
+000191                 DISPLAY "INVALID SELECTION"
+000192                 PERFORM 150-SELECT-PRINTER
+000193             ELSE
+000194                 IF WS-PRINTER-SELECTION > WS-PRINTER-COUNT
+000195                     DISPLAY "INVALID SELECTION"
+000196                     PERFORM 150-SELECT-PRINTER
+000197                 ELSE
+000198                     MOVE WS-PRINTER-NAME
+000199                         (WS-PRINTER-SELECTION)
+000200                         TO WS-SELECTED-PRINTER
+000201                 END-IF
+000202             END-IF
+000203
+000204             PERFORM 170-BUILD-PRINT-COMMAND.
+000205
+000206         170-BUILD-PRINT-COMMAND.
+000207
+000208             MOVE SPACES TO WS-PRINT-COMMAND
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0005
+
+LINE    PG/LN  A...B............................................................
+
+000209
+000210             STRING
+000211                 "lp -d "
+000212                     DELIMITED BY SIZE
+000213
+000214                 FUNCTION TRIM(WS-SELECTED-PRINTER)
+000215                     DELIMITED BY SIZE
+000216
+000217                 " -o cpi=10"
+000218                     DELIMITED BY SIZE
+000219
+000220                 " -o lpi=6"
+000221                     DELIMITED BY SIZE
+000222
+000223                 " print-80-records.txt"
+000224                     DELIMITED BY SIZE
+000225
+000226                 INTO WS-PRINT-COMMAND
+000227             END-STRING.
+000228
+000229         200-OPEN-NEW-REPORT.
+000230
+000231             OPEN OUTPUT PRINT-FILE
+000232
+000233             IF WS-PRINT-STATUS NOT = "00"
+000234                 DISPLAY "ERROR OPENING REPORT FILE"
+000235                 DISPLAY "FILE STATUS: " WS-PRINT-STATUS
+000236                 STOP RUN
+000237             END-IF.
+000238
+000239         300-START-NEW-PAGE.
+000240
+000241             ADD 1 TO WS-PAGE-NUMBER
+000242             MOVE WS-PAGE-NUMBER TO WS-DISPLAY-PAGE
+000243             MOVE ZERO TO WS-LINE-COUNT
+000244
+000245             MOVE SPACES TO PRINT-RECORD
+000246
+000247             STRING
+000248                 "  "
+000249                 "GNUCOBOL 80-RECORD PRINTING TEST"
+000250                 "                                      "
+000251                 "PAGE "
+000252                 WS-DISPLAY-PAGE
+000253                 DELIMITED BY SIZE
+000254                 INTO PRINT-RECORD
+000255             END-STRING
+000256
+000257             PERFORM 350-WRITE-REPORT-LINE
+000258
+000259             MOVE SPACES TO PRINT-RECORD
+000260             MOVE ALL "=" TO PRINT-RECORD(3:78)
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0006
+
+LINE    PG/LN  A...B............................................................
+
+000261             PERFORM 350-WRITE-REPORT-LINE
+000262
+000263             MOVE SPACES TO PRINT-RECORD
+000264
+000265             STRING
+000266                 "  "
+000267                 "NO."
+000268                 "   "
+000269                 "DESCRIPTION"
+000270                 "                                            "
+000271                 "STATUS"
+000272                 DELIMITED BY SIZE
+000273                 INTO PRINT-RECORD
+000274             END-STRING
+000275
+000276             PERFORM 350-WRITE-REPORT-LINE
+000277
+000278             MOVE SPACES TO PRINT-RECORD
+000279             MOVE ALL "-" TO PRINT-RECORD(3:78)
+000280             PERFORM 350-WRITE-REPORT-LINE.
+000281
+000282         350-WRITE-REPORT-LINE.
+000283
+000284             WRITE PRINT-RECORD
+000285
+000286             IF WS-PRINT-STATUS NOT = "00"
+000287                 DISPLAY "ERROR WRITING REPORT FILE"
+000288                 DISPLAY "FILE STATUS: " WS-PRINT-STATUS
+000289                 CLOSE PRINT-FILE
+000290                 STOP RUN
+000291             END-IF
+000292
+000293             ADD 1 TO WS-LINE-COUNT.
+000294
+000295         400-WRITE-DETAIL-RECORD.
+000296
+000297             MOVE WS-RECORD-NUMBER TO WS-DISPLAY-NUMBER
+000298             MOVE SPACES TO PRINT-RECORD
+000299
+000300             STRING
+000301                 "  "
+000302                 WS-DISPLAY-NUMBER
+000303                 "    "
+000304                 "THIS IS GNUCOBOL TEST RECORD NUMBER "
+000305                 WS-DISPLAY-NUMBER
+000306                 "                    "
+000307                 "OK"
+000308                 DELIMITED BY SIZE
+000309                 INTO PRINT-RECORD
+000310             END-STRING
+000311
+000312             PERFORM 350-WRITE-REPORT-LINE.
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0007
+
+LINE    PG/LN  A...B............................................................
+
+000313
+000314         500-INSERT-FORM-FEED.
+000315
+000316             CLOSE PRINT-FILE
+000317
+000318             IF WS-PRINT-STATUS NOT = "00"
+000319                 DISPLAY "ERROR CLOSING REPORT BEFORE FORM FEED"
+000320                 DISPLAY "FILE STATUS: " WS-PRINT-STATUS
+000321                 STOP RUN
+000322             END-IF
+000323
+000324             CALL "SYSTEM"
+000325                 USING WS-FORM-FEED-COMMAND
+000326                 RETURNING WS-RETURN-CODE
+000327             END-CALL
+000328
+000329             IF WS-RETURN-CODE NOT = ZERO
+000330                 DISPLAY "ERROR INSERTING FORM FEED"
+000331                 DISPLAY "RETURN CODE: " WS-RETURN-CODE
+000332                 STOP RUN
+000333             END-IF
+000334
+000335             OPEN EXTEND PRINT-FILE
+000336
+000337             IF WS-PRINT-STATUS NOT = "00"
+000338                 DISPLAY "ERROR REOPENING REPORT FILE"
+000339                 DISPLAY "FILE STATUS: " WS-PRINT-STATUS
+000340                 STOP RUN
+000341             END-IF.
+000342
+000343         600-CLOSE-REPORT.
+000344
+000345             CLOSE PRINT-FILE
+000346
+000347             IF WS-PRINT-STATUS NOT = "00"
+000348                 DISPLAY "ERROR CLOSING REPORT FILE"
+000349                 DISPLAY "FILE STATUS: " WS-PRINT-STATUS
+000350                 STOP RUN
+000351             END-IF.
+000352
+000353         700-SEND-TO-PRINTER.
+000354
+000355             DISPLAY SPACE
+000356             DISPLAY "SELECTED PRINTER: "
+000357                 FUNCTION TRIM(WS-SELECTED-PRINTER)
+000358
+000359             DISPLAY "SENDING REPORT..."
+000360
+000361             CALL "SYSTEM"
+000362                 USING WS-PRINT-COMMAND
+000363                 RETURNING WS-RETURN-CODE
+000364             END-CALL
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0008
+
+LINE    PG/LN  A...B............................................................
+
+000365
+000366             IF WS-RETURN-CODE = ZERO
+000367                 DISPLAY "REPORT SENT SUCCESSFULLY"
+000368                 DISPLAY "DETAIL RECORDS: 80"
+000369                 DISPLAY "REPORT FILE: print-80-records.txt"
+000370             ELSE
+000371                 DISPLAY "ERROR SENDING REPORT"
+000372                 DISPLAY "RETURN CODE: " WS-RETURN-CODE
+000373                 DISPLAY "COMMAND: "
+000374                     FUNCTION TRIM(WS-PRINT-COMMAND)
+000375             END-IF.
+000376
+000377         800-DELETE-TEMP-FILE.
+000378
+000379             CALL "SYSTEM"
+000380                 USING WS-DELETE-TEMP-COMMAND
+000381                 RETURNING WS-RETURN-CODE
+000382             END-CALL.
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0009
+
+NAME                           DEFINED                REFERENCES
+
+PRINT-FILE                     12       25     *231    *284     289     316
+                                       *335     345                    x7
+PRINT-RECORD                   26      *245     254    *259    *260    *263
+                                        273    *278    *279     284    *298
+                                        309                            x11
+
+PRINTER-LIST-FILE              17       28      123     135     152    x4
+PRINTER-LIST-RECORD            29       140     144                    x2
+
+WS-PRINT-STATUS                33       15      233     235     286     288
+                                        318     320     337     339     347
+                                        349                            x11
+WS-LIST-STATUS                 34       20      125     127     154     156
+                                                                       x5
+WS-RETURN-CODE                 36       114     117     119     326     329
+                                        331     363     366     372     381
+                                                                       x10
+WS-RECORD-NUMBER               39       90      92      297            x3
+WS-DISPLAY-NUMBER              40      *297     302     305            x3
+WS-PAGE-NUMBER                 42      *241     242                    x2
+WS-DISPLAY-PAGE                43      *242     252                    x2
+WS-LINE-COUNT                  45       94     *243    *293            x3
+WS-MAX-LINES                   46       94                             x1
+WS-PRINTER-COUNT               48      *131     141    *142     146     160
+                                        174     194                    x7
+WS-PRINTER-INDEX               49       172     174     176     181    x4
+WS-PRINTER-SELECTION           50      *188     190     194     199    x4
+WS-MENU-NUMBER                 51      *176     178                    x2
+WS-END-OF-PRINTER-LIST         53     referenced by child
+END-OF-PRINTER-LIST            54       134    *137                    x2
+MORE-PRINTERS                  55      *132                            x1
+WS-SELECTED-PRINTER            57      *200     214     357            x3
+WS-PRINT-COMMAND               60      *208     226     362     374    x4
+WS-QUERY-COMMAND               63       113                            x1
+WS-FORM-FEED-COMMAND           67       325                            x1
+WS-DELETE-TEMP-COMMAND         71       380                            x1
+WS-PRINTER-TABLE               74     referenced by child
+WS-PRINTER-ENTRY               75     referenced by child
+WS-PRINTER-NAME                76      *145     181     198            x3
+
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0010
+
+LABEL                          DEFINED                REFERENCES
+
+E PRINT80                      80
+P 100-MAIN                     80     not referenced
+P 120-QUERY-PRINTERS           110      82                             x1
+P 150-SELECT-PRINTER           166      84      192     196            x3
+P 170-BUILD-PRINT-COMMAND      206      204                            x1
+P 200-OPEN-NEW-REPORT          229      86                             x1
+P 300-START-NEW-PAGE           239      88      96                     x2
+P 350-WRITE-REPORT-LINE        282      257     261     276     280     312
+                                                                       x5
+P 400-WRITE-DETAIL-RECORD      295      99                             x1
+P 500-INSERT-FORM-FEED         314      95                             x1
+P 600-CLOSE-REPORT             343      102                            x1
+P 700-SEND-TO-PRINTER          353      104                            x1
+P 800-DELETE-TEMP-FILE         377      106                            x1
+GnuCOBOL 3.2.0          printtest.cbl        Sat Jul 25 2026 22:58:49  Page 0011
+
+FUNCTION                       TYPE                   REFERENCES
+
+L SYSTEM                       SYSTEM   112     324     361     379    x4
+
+0 warnings in compilation group
+0 errors in compilation group
