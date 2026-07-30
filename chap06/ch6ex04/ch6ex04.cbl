@@ -1,0 +1,131 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           CH6EX04.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CUSTOMER-REPORT
+               ASSIGN TO 'c0604.rpt'
+               ORGANIZATION IS LINE SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  CUSTOMER-REPORT.
+       01  REPORT-OUT              PIC X(80).
+       WORKING-STORAGE SECTION.
+       01  WORK-AREAS.
+           05  MORE-LABELS         PIC X VALUE "Y".
+           05  REPLY               PIC X.
+           05  CUSTOMER-NAME-IN    PIC X(20).
+           05  CUSTOMER-ADDRESS-IN PIC X(20).
+           05  CUSTOMER-CITY-IN    PIC X(20).
+           05  NUMBER-OF-LABELS    PIC 99.
+       01  DETAIL-LINE.
+           05  CUSTOMER-AREA       PIC X(20).
+           05  FILLER              PIC X(50) VALUE SPACES.
+      *    COLOR DEFINITIONS
+       78  COLOR-BLACK          VALUE 0.
+       78  COLOR-BLUE           VALUE 1.
+       78  COLOR-GREEN          VALUE 2.
+       78  COLOR-CYAN           VALUE 3.
+       78  COLOR-RED            VALUE 4.
+       78  COLOR-MAGENTA        VALUE 5.
+       78  COLOR-BROWN          VALUE 6.
+       78  COLOR-LIGHT-GRAY     VALUE 7.
+       78  COLOR-DARK-GRAY      VALUE 8.
+       78  COLOR-BRIGHT-BLUE    VALUE 9.
+       78  COLOR-BRIGHT-GREEN   VALUE 10.
+       78  COLOR-BRIGHT-CYAN    VALUE 11.
+       78  COLOR-BRIGHT-RED     VALUE 12.
+       78  COLOR-BRIGHT-MAGENTA VALUE 13.
+       78  COLOR-BRIGHT-YELLOW  VALUE 14.
+       78  COLOR-BRIGHT-WHITE   VALUE 15.
+       SCREEN SECTION.
+       01  SCREEN-1
+           FOREGROUND-COLOR COLOR-BLUE
+           BACKGROUND-COLOR COLOR-LIGHT-GRAY.
+           
+           05  BLANK SCREEN    .
+           05  LINE   10 COLUMN 10 VALUE "          NAME:".
+           05  COLUMN 29 PIC X(20) TO CUSTOMER-NAME-IN.
+           05  LINE   11 COLUMN 10 VALUE "STREET ADDRESS:".
+           05  COLUMN 29 PIC X(20) TO CUSTOMER-ADDRESS-IN.
+           05  LINE 12 COLUMN 10 VALUE "CITY, STATE, ZIP:".
+           05  COLUMN 29 PIC X(20) TO CUSTOMER-CITY-IN.
+           05  LINE 14 COLUMN 10
+                   VALUE "NUMBER OF COPIES OF LABEL TO BE PRINTED:".
+           05  COLUMN 51 PIC 9(2) TO NUMBER-OF-LABELS
+                   FOREGROUND-COLOR COLOR-RED
+                   BACKGROUND-COLOR COLOR-LIGHT-GRAY
+                   HIGHLIGHT
+                   AUTO.    
+       01  SCREEN-2
+           FOREGROUND-COLOR COLOR-BLUE
+           BACKGROUND-COLOR COLOR-LIGHT-GRAY.
+           
+           05  BLANK SCREEN.
+           05  REVERSE-VIDEO.
+               10  LINE 10 COLUMN 10 PIC X(20) FROM CUSTOMER-NAME-IN.
+               10  LINE 11 COLUMN 10 PIC X(20) FROM CUSTOMER-ADDRESS-IN.
+               10  LINE 12 COLUMN 10 PIC X(20) FROM CUSTOMER-CITY-IN.
+           05  LINE 16 COLUMN 10 VALUE "IS LABEL OK? (Y/N)".
+           05  COLUMN 29 PIC X TO REPLY AUTO.    
+       
+       01  SCREEN-3
+           FOREGROUND-COLOR COLOR-RED
+           BACKGROUND-COLOR COLOR-LIGHT-GRAY.
+           05  BLANK SCREEN.
+           05  LINE 10 COLUMN 10
+               VALUE "DO YOU WISH TO ENTER ANOTHER LABEL? (Y/N)".
+           05  COLUMN 53 PIC X TO MORE-LABELS
+               AUTO.
+
+       PROCEDURE DIVISION.
+       000-MAIN-MODULE.
+           PERFORM 100-INITIALIZATION-MODULE
+           PERFORM 200-PROCESS-MODULE
+               UNTIL MORE-LABELS = "N" OR "n"
+           PERFORM 900-TERMINATION-MODULE
+           STOP RUN
+           .
+
+       100-INITIALIZATION-MODULE.
+           OPEN OUTPUT CUSTOMER-REPORT
+           .
+
+       200-PROCESS-MODULE.
+           DISPLAY SCREEN-1
+           ACCEPT SCREEN-1
+           DISPLAY SCREEN-2
+           ACCEPT SCREEN-2
+           IF REPLY = "Y" OR "y"
+               PERFORM 201-LABEL-MODULE NUMBER-OF-LABELS TIMES
+           END-IF    
+           DISPLAY SCREEN-3
+           ACCEPT SCREEN-3
+           .
+
+       201-LABEL-MODULE.
+           MOVE CUSTOMER-NAME-IN TO CUSTOMER-AREA
+           PERFORM 300-WRITE-MODULE
+           MOVE CUSTOMER-ADDRESS-IN TO CUSTOMER-AREA
+           PERFORM 300-WRITE-MODULE
+           MOVE CUSTOMER-CITY-IN TO CUSTOMER-AREA
+           PERFORM 300-WRITE-MODULE
+           PERFORM 301-WRITE-MODULE
+           .
+
+       300-WRITE-MODULE.
+           WRITE REPORT-OUT FROM DETAIL-LINE
+                       AFTER ADVANCING 1 LINES
+           MOVE SPACES TO REPORT-OUT
+           .
+
+       301-WRITE-MODULE.
+           MOVE SPACES TO REPORT-OUT
+           WRITE REPORT-OUT AFTER ADVANCING 1 LINES
+           .
+
+       900-TERMINATION-MODULE.
+           CLOSE CUSTOMER-REPORT
+           .
+           
