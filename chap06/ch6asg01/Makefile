@@ -3,10 +3,10 @@ COBC = cobc
 COBFLAGS = -std=default -x -Wall
 
 # Target names
-TARGET = ch6pp02
-SOURCE = ch6pp02.cbl
-LISTING = ch6pp02.lst
-ZIP_NAME = ch6pp02_submission.zip
+TARGET = ch6asg01
+SOURCE = ch6asg01.cbl
+LISTING = ch6asg01.lst
+ZIP_NAME = ch6asg01_submission.zip
 
 # Default target: builds the binary and compiler listing
 all: $(TARGET)

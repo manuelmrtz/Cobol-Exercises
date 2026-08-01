@@ -1,6 +1,6 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID.
-           CH6PP02.
+           ch6asg01.
  
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
